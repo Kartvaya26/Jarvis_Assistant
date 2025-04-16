@@ -3,17 +3,23 @@ import webbrowser
 import pyttsx3
 import musicLibrary
 import requests
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 recognizer = sr.Recognizer()
 engine = pyttsx3.init()
-newsapi = "e12450562674455a9e075c98b49d509b"
+
+# 🔒 API Keys hidden via .env
+newsapi = os.getenv("NEWSAPI_KEY")
+API_KEY = os.getenv("DEEPINFRA_API_KEY")
 
 def speak(text):
     engine.say(text)
     engine.runAndWait()
 
 def aiprocess(command):
-    API_KEY = "KloDMnSoZ7Hx60g5d8USzvcFc9MyRAhx"
     headers = {
         "Authorization": f"Bearer {API_KEY}",
         "Content-Type": "application/json"
@@ -28,8 +34,7 @@ def aiprocess(command):
     try:
         response = requests.post(url, headers=headers, json=data)
         result = response.json()
-        # Debugging के लिए result print कर लो, ताकि पता चले कि response कैसा आ रहा है
-        print(result)  # Debugging के लिए
+        print(result)
         if "results" in result:
             return result['results'][0]['generated_text']
         elif "generated_text" in result:
@@ -92,7 +97,6 @@ def processCommand(c):
             speak("Something went wrong while getting the news.")
 
     else:
-        # AI से जवाब लो
         response = aiprocess(c)
         speak(response)
 
